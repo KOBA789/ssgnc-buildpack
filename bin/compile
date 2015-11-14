@@ -1,0 +1,28 @@
+#!/bin/sh
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+echo "-----> Compiling ssgnc"
+
+BUILD_DIR=${1:-}
+CACHE_DIR=${2:-}
+ABS_CACHE_DIR=$(cd $CACHE_DIR; pwd)
+ENV_DIR=${3:-}
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+VENDOR_DIR=$(cd "$BUILD_DIR/vendor/ssgnc"; pwd)
+
+cd "$CACHE_DIR"
+if [ ! -d "$ABS_CACHE_DIR/ssgnc" ]; then
+    curl -L --silent https://ssgnc.googlecode.com/files/ssgnc-0.4.6.tar.gz  | tar zxvf -
+    cd ssgnc-0.4.6
+    ./configure --prefix="$ABS_CACHE_DIR/ssgnc"
+    make install
+fi
+
+mv "$ABS_CACHE_DIR/ssgnc" "$VENDOR_DIR"
+
+PROFILE_PATH="$BUILD_DIR/.profile.d/ssgnc.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH="$PATH:$VENDOR_DIR/bin"' >> $PROFILE_PATH
