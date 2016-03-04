@@ -13,14 +13,16 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 VENDOR_DIR="$BUILD_DIR/vendor"
 
 if [ ! -d "$CACHE_DIR/ssgnc" ]; then
+    mkdir -p "$CACHE_DIR/ssgnc"
+    cd "$CACHE_DIR/ssgnc"
     curl -L --silent https://ssgnc.googlecode.com/files/ssgnc-0.4.6.tar.gz  | tar zxvf -
     cd ssgnc-0.4.6
-    ./configure --prefix="$CACHE_DIR/ssgnc"
-    make install
+    ./configure --prefix="$VENDOR_DIR/ssgnc"
 fi
 
 mkdir -p "$VENDOR_DIR"
-mv "$CACHE_DIR/ssgnc" "$VENDOR_DIR"
+cd "$CACHE_DIR/ssgnc/ssgnc-0.4.6"
+make install
 
 PROFILE_PATH="$BUILD_DIR/.profile.d/ssgnc.sh"
 mkdir -p $(dirname $PROFILE_PATH)
